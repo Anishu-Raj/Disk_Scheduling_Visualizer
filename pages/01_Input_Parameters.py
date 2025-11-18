@@ -3,11 +3,15 @@ import streamlit as st
 from utils import parse_requests
 
 st.set_page_config(page_title="Input Parameters", layout="wide")
-
 st.title("⚙️ Input Parameters")
 
+# Show a helpful message if coming from home
+if st.session_state.get('from_home'):
+    st.info("Inputs saved to session after you submit the form. Then go to Simulation page.")
+
 with st.form("input_form"):
-    req_text = st.text_area("Enter Disk Requests (comma or space separated):", placeholder="98, 183, 37, 122, 14, 124, 65, 67")
+    req_text = st.text_area("Enter Disk Requests (comma or space separated):",
+                            placeholder="98, 183, 37, 122, 14, 124, 65, 67")
     head = st.number_input("Initial Head Position:", min_value=0, value=50, step=1)
     algo = st.selectbox("Choose Algorithm:", ["FCFS", "SSTF", "SCAN", "LOOK", "C-SCAN", "C-LOOK", "COMPARE ALL"])
     direction = st.selectbox("Direction (for SCAN/LOOK):", ["right", "left"])
@@ -37,6 +41,6 @@ if submitted:
             st.session_state['animate'] = bool(animate)
             st.session_state['anim_speed'] = float(anim_speed)
             st.session_state['save_name'] = save_name.strip()
-            st.success("Inputs saved. Now go to the Simulation page (Pages menu -> 02_Simulation).")
+            st.success("Inputs saved. Now open the Simulation page from the left sidebar.")
     except Exception as e:
         st.error(f"Invalid input: {e}")

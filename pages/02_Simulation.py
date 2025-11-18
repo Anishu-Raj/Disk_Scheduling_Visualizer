@@ -44,7 +44,7 @@ def run_algorithm_by_name(name):
     raise ValueError("Unknown algorithm")
 
 if algo == "COMPARE ALL":
-    st.info("You selected 'COMPARE ALL'. Please go to the Comparison page (Pages -> 03_Comparison) to view comparisons.")
+    st.info("You selected 'COMPARE ALL'. Please go to the Comparison page (left sidebar -> Comparison).")
 else:
     try:
         res = run_algorithm_by_name(algo)
@@ -63,12 +63,9 @@ else:
         st.subheader("Disk Head Movement")
 
         plot_placeholder = st.empty()
-
-        # narration placeholder
         narration = st.empty()
 
         path = res["path"]
-        # animate or static
         if animate:
             path_so_far = []
             for i in range(len(path)):
@@ -78,7 +75,6 @@ else:
                 fig.update_traces(line_color="#38bdf8", marker=dict(size=10, color="#22d3ee"))
                 fig.update_yaxes(range=[min(path)-5, max(path)+5])
                 plot_placeholder.plotly_chart(fig, use_container_width=True)
-                # narration:
                 if i > 0:
                     from_pos = path[i-1]; to_pos = path[i]
                     dist = abs(to_pos - from_pos)
@@ -94,13 +90,11 @@ else:
             st.plotly_chart(fig, use_container_width=True)
 
         st.success("✅ Simulation complete")
-        # Save to DB option
         if st.button("💾 Save Run to History"):
             name = save_name if save_name else f"{algo}_run"
             save_run(name, st.session_state['requests_text'], head, algo, direction, disk_start, disk_end, seek_time_ms, metrics)
             st.success("Saved run to history.")
 
-        # allow download of path CSV
         path_df = pd.DataFrame({"Step": list(range(len(path))), "Cylinder": path})
         csv_data = path_df.to_csv(index=False)
         st.download_button("⬇️ Download Path CSV", csv_data, file_name="run_path.csv")

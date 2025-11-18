@@ -64,34 +64,22 @@ def look(requests: List[int], head: int, direction: str = "right") -> Dict:
     return {"name": "LOOK", "order": serviced, "path": path, "total_head_movement": total}
 
 def c_scan(requests: List[int], head: int, disk_start: int = 0, disk_end: int = 199) -> Dict:
-    """
-    Circular SCAN (C-SCAN):
-    Move right servicing requests; when at end jump to start (visual jump).
-    For fairness we usually don't count the jump in movement; here jump is visual only.
-    """
     path = [head]
     total = 0
     left = sorted([r for r in requests if r < head])
     right = sorted([r for r in requests if r >= head])
-    # service right
     for r in right:
         total += abs(r - path[-1]); path.append(r)
     if path[-1] != disk_end:
         total += abs(disk_end - path[-1]); path.append(disk_end)
-    # visual jump to start for clarity (no added total)
     if left:
-        path.append(disk_start)  # visual wrap
+        path.append(disk_start)
         for r in left:
             total += abs(r - path[-1]); path.append(r)
     serviced = [x for x in path[1:] if x in requests]
     return {"name": "C-SCAN", "order": serviced, "path": path, "total_head_movement": total}
 
 def c_look(requests: List[int], head: int) -> Dict:
-    """
-    C-LOOK:
-    Service right side, then jump to lowest requested cylinder and continue.
-    Jump is visual only (not added to total).
-    """
     path = [head]
     total = 0
     left = sorted([r for r in requests if r < head])
@@ -99,7 +87,7 @@ def c_look(requests: List[int], head: int) -> Dict:
     for r in right:
         total += abs(r - path[-1]); path.append(r)
     if left:
-        path.append(min(left))  # visual wrap
+        path.append(min(left))
         for r in left:
             total += abs(r - path[-1]); path.append(r)
     serviced = [x for x in path[1:] if x in requests]
